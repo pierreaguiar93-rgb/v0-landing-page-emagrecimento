@@ -1,0 +1,324 @@
+
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .lp { background: #0a0a0a; color: #f0f0f0; font-family: 'Segoe UI', system-ui, sans-serif; max-width: 680px; margin: 0 auto; width: 100%; overflow-x: hidden; }
+
+  /* HERO */
+  .hero { background: #0a0a0a; padding: 48px 20px 40px; text-align: center; border-bottom: 1px solid #1a1a1a; }
+  .hero-badge { display: inline-block; background: #1a0000; color: #ff4444; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 16px; border-radius: 20px; border: 1px solid #ff444433; margin-bottom: 20px; }
+  .hero h1 { font-size: clamp(20px, 5vw, 28px); font-weight: 700; line-height: 1.3; color: #fff; margin-bottom: 14px; word-break: break-word; }
+  .hero h1 span { color: #ff4444; }
+  .hero p { font-size: clamp(13px, 3.5vw, 15px); color: #aaa; margin-bottom: 28px; line-height: 1.6; }
+  .btn-hero { background: linear-gradient(135deg, #ff3333, #cc0000); color: #fff; font-size: clamp(13px, 3.8vw, 15px); font-weight: 700; letter-spacing: 0.5px; padding: 18px 24px; border: none; border-radius: 8px; cursor: pointer; width: 100%; max-width: 360px; text-transform: uppercase; transition: transform 0.15s, opacity 0.15s; touch-action: manipulation; }
+  .btn-hero:hover { transform: scale(1.02); opacity: 0.92; }
+  .hero-sub { font-size: 12px; color: #555; margin-top: 12px; }
+
+  /* QUIZ */
+  .quiz-section { background: #0d0d0d; padding: 40px 20px; }
+  .quiz-wrapper { display: none; }
+  .quiz-wrapper.active { display: block; }
+  .progress-bar-wrap { background: #1a1a1a; border-radius: 4px; height: 5px; margin-bottom: 28px; }
+  .progress-bar-fill { background: #ff4444; height: 5px; border-radius: 4px; transition: width 0.4s ease; }
+  .quiz-step { animation: fadeIn 0.35s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .quiz-q { font-size: clamp(16px, 4.5vw, 18px); font-weight: 600; color: #fff; margin-bottom: 20px; line-height: 1.4; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt { background: #141414; border: 1px solid #2a2a2a; color: #e0e0e0; font-size: clamp(13px, 3.8vw, 14px); padding: 16px 16px; border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s; display: flex; align-items: center; gap: 12px; width: 100%; touch-action: manipulation; min-height: 54px; }
+  .quiz-opt:hover, .quiz-opt:active { border-color: #ff4444; background: #1a0000; color: #fff; }
+  .quiz-opt .opt-icon { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid #444; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; color: #666; }
+  .quiz-opt:hover .opt-icon, .quiz-opt:active .opt-icon { border-color: #ff4444; color: #ff4444; }
+  .step-counter { font-size: 12px; color: #555; margin-bottom: 10px; }
+
+  /* PROCESSING */
+  .processing { display: none; text-align: center; padding: 48px 20px; }
+  .processing.active { display: block; }
+  .spinner { width: 44px; height: 44px; border: 3px solid #1a1a1a; border-top-color: #ff4444; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .processing p { color: #888; font-size: 14px; }
+  .processing-steps { margin-top: 20px; text-align: left; max-width: 280px; margin-left: auto; margin-right: auto; }
+  .proc-step { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 13px; color: #555; }
+  .proc-step.done { color: #22cc88; }
+  .proc-step .dot { width: 8px; height: 8px; border-radius: 50%; background: #333; flex-shrink: 0; }
+  .proc-step.done .dot { background: #22cc88; }
+
+  /* RESULTADO */
+  .resultado { display: none; background: #0d0d0d; }
+  .resultado.active { display: block; }
+  .diag-wrap { padding: 40px 20px 0; }
+  .diag-card { background: #110000; border: 1px solid #ff444433; border-radius: 12px; padding: 22px 18px; margin-bottom: 24px; }
+  .diag-label { font-size: 11px; color: #ff4444; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 10px; }
+  .diag-title { font-size: clamp(19px, 5vw, 24px); font-weight: 700; color: #fff; line-height: 1.25; margin-bottom: 14px; }
+  .diag-title span { color: #ff4444; }
+  .diag-text { font-size: clamp(13px, 3.5vw, 14px); color: #bbb; line-height: 1.7; margin-bottom: 16px; }
+  .alert-box { background: #1a0a00; border: 1px solid #ff880033; border-radius: 8px; padding: 14px 16px; margin-top: 16px; }
+  .alert-box p { font-size: clamp(12px, 3.2vw, 13px); color: #ff8800; line-height: 1.6; }
+  .meter-wrap { margin: 20px 0; }
+  .meter-label { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 6px; }
+  .meter { background: #1a1a1a; border-radius: 4px; height: 8px; overflow: hidden; }
+  .meter-fill { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #ff8800, #ff3333); animation: fillUp 1.2s 0.3s ease forwards; width: 0; }
+  @keyframes fillUp { to { width: 82%; } }
+
+  /* PROVA SOCIAL */
+  .social { background: #0a0a0a; padding: 40px 20px; border-top: 1px solid #1a1a1a; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 28px; }
+  .stat-card { background: #111; border: 1px solid #222; border-radius: 10px; padding: 14px 8px; text-align: center; }
+  .stat-num { font-size: clamp(17px, 4.5vw, 22px); font-weight: 700; color: #ff4444; }
+  .stat-desc { font-size: clamp(10px, 2.5vw, 11px); color: #666; margin-top: 4px; line-height: 1.4; }
+  .depo-card { background: #111; border: 1px solid #1e1e1e; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .depo-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .depo-avatar { width: 36px; height: 36px; border-radius: 50%; background: #1a0000; border: 1.5px solid #ff444433; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #ff4444; flex-shrink: 0; }
+  .depo-name { font-size: 13px; font-weight: 600; color: #ddd; }
+  .depo-stars { font-size: 11px; color: #ff8800; letter-spacing: 1px; }
+  .depo-text { font-size: clamp(12px, 3.2vw, 13px); color: #999; line-height: 1.6; }
+  .section-title { font-size: 12px; color: #ff4444; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 20px; }
+
+  /* OFERTA */
+  .oferta { background: #0d0d0d; padding: 40px 20px; border-top: 1px solid #1a1a1a; }
+  .oferta-headline { font-size: clamp(18px, 5vw, 22px); font-weight: 700; color: #fff; line-height: 1.35; margin-bottom: 16px; }
+  .oferta-headline span { color: #ff4444; }
+  .oferta-text { font-size: clamp(13px, 3.5vw, 14px); color: #999; line-height: 1.7; margin-bottom: 20px; }
+  .contraste { background: #0f0f0f; border: 1px solid #1f1f1f; border-radius: 10px; padding: 16px; margin-bottom: 24px; }
+  .contraste-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
+  .contraste-row:last-child { border-bottom: none; }
+  .contraste-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; font-size: 11px; }
+  .icon-x { background: #1a0000; color: #ff4444; }
+  .icon-check { background: #001a0a; color: #22cc88; }
+  .contraste-row p { font-size: clamp(12px, 3.2vw, 13px); color: #aaa; line-height: 1.55; }
+  .price-box { background: #110000; border: 1px solid #ff444433; border-radius: 12px; padding: 24px 20px; text-align: center; margin-bottom: 20px; }
+  .price-de { font-size: 14px; color: #555; text-decoration: line-through; margin-bottom: 4px; }
+  .price-por { font-size: 13px; color: #999; margin-bottom: 4px; }
+  .price-val { font-size: clamp(38px, 10vw, 44px); font-weight: 800; color: #fff; line-height: 1; margin-bottom: 8px; }
+  .price-val .cifrao { font-size: clamp(18px, 5vw, 22px); vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-val .cents { font-size: clamp(20px, 5.5vw, 26px); }
+  .price-sub { font-size: 12px; color: #555; }
+  .urgency-bar { background: #1a0a00; border: 1px solid #ff440022; border-radius: 8px; padding: 12px 14px; text-align: center; margin-bottom: 20px; }
+  .urgency-bar p { font-size: clamp(12px, 3.2vw, 13px); color: #ff8800; line-height: 1.5; }
+  .urgency-bar strong { color: #ff4444; }
+  .btn-cta { background: linear-gradient(135deg, #ff3333, #cc0000); color: #fff; font-size: clamp(13px, 4vw, 16px); font-weight: 800; letter-spacing: 0.5px; padding: 20px 20px; border: none; border-radius: 10px; cursor: pointer; width: 100%; text-transform: uppercase; transition: transform 0.15s, opacity 0.15s; margin-bottom: 10px; touch-action: manipulation; line-height: 1.3; }
+  .btn-cta:hover, .btn-cta:active { transform: scale(1.02); opacity: 0.92; }
+  .cta-sub { font-size: clamp(11px, 2.8vw, 12px); color: #555; text-align: center; }
+
+  /* GARANTIA */
+  .garantia { background: #0a0a0a; padding: 32px 20px; border-top: 1px solid #1a1a1a; }
+  .garantia-inner { display: flex; align-items: flex-start; gap: 14px; background: #111; border: 1px solid #1e1e1e; border-radius: 12px; padding: 18px 16px; }
+  .shield { width: 48px; height: 48px; background: #001a0a; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .shield svg { width: 24px; height: 24px; }
+  .garantia-text h3 { font-size: 15px; font-weight: 600; color: #22cc88; margin-bottom: 6px; }
+  .garantia-text p { font-size: clamp(12px, 3.2vw, 13px); color: #777; line-height: 1.55; }
+  .footer { padding: 20px 20px; text-align: center; border-top: 1px solid #111; }
+  .footer p { font-size: 11px; color: #333; }
+</style>
+
+<div class="lp">
+
+  <!-- HERO -->
+  <div class="hero" id="hero-section">
+    <div class="hero-badge">Diagnóstico gratuito</div>
+    <h1>Seu metabolismo está <span>travado…</span> e isso está te impedindo de emagrecer</h1>
+    <p>Descubra em menos de 1 minuto o que está bloqueando seu corpo de queimar gordura — e o que fazer para reverter isso agora.</p>
+    <button class="btn-hero" onclick="startQuiz()">FAZER DIAGNÓSTICO GRATUITO</button>
+    <p class="hero-sub">Gratuito · Leva menos de 1 minuto · Sem compromisso</p>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-section" id="quiz-section">
+    <div class="quiz-wrapper" id="quiz-wrapper">
+      <div class="step-counter" id="step-counter">Pergunta 1 de 5</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar" style="width: 20%"></div>
+      </div>
+      <div class="quiz-step" id="quiz-step">
+        <div class="quiz-q" id="quiz-question"></div>
+        <div class="quiz-opts" id="quiz-options"></div>
+      </div>
+    </div>
+    <div class="processing" id="processing">
+      <div class="spinner"></div>
+      <p>Analisando suas respostas…</p>
+      <div class="processing-steps">
+        <div class="proc-step" id="ps1"><div class="dot"></div> Verificando padrão metabólico</div>
+        <div class="proc-step" id="ps2"><div class="dot"></div> Identificando bloqueios hormonais</div>
+        <div class="proc-step" id="ps3"><div class="dot"></div> Calculando potencial de perda</div>
+        <div class="proc-step" id="ps4"><div class="dot"></div> Gerando diagnóstico personalizado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="resultado" id="resultado-section">
+    <div class="diag-wrap">
+      <div class="diag-card">
+        <div class="diag-label">Seu diagnóstico</div>
+        <div class="diag-title">Seu metabolismo está <span>DESACELERADO</span></div>
+        <div class="diag-text">Com base nas suas respostas, seu corpo entrou em modo de defesa e está impedindo ativamente a queima de gordura. É por isso que dietas e exercícios sozinhos não funcionam para você.</div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Nível de bloqueio metabólico</span><span style="color:#ff4444">ALTO</span></div>
+          <div class="meter"><div class="meter-fill"></div></div>
+        </div>
+        <div class="alert-box">
+          <p>⚠ Se isso não for corrigido agora, seu corpo tende a acumular ainda mais gordura nas próximas semanas — o mecanismo de defesa se intensifica com o tempo.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROVA SOCIAL -->
+    <div class="social">
+      <div class="section-title">Resultados reais</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num">+2.500</div>
+          <div class="stat-desc">alunos transformados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">-6kg</div>
+          <div class="stat-desc">em média em 30 dias</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">97%</div>
+          <div class="stat-desc">de satisfação</div>
+        </div>
+      </div>
+      <div class="depo-card">
+        <div class="depo-top">
+          <div class="depo-avatar">CM</div>
+          <div><div class="depo-name">Camila M.</div><div class="depo-stars">★★★★★</div></div>
+        </div>
+        <div class="depo-text">"Depois de anos tentando, finalmente consegui emagrecer. Perdi 7kg em 30 dias e sem passar fome. Não acreditei que seria possível até ver o resultado."</div>
+      </div>
+      <div class="depo-card">
+        <div class="depo-top">
+          <div class="depo-avatar">RA</div>
+          <div><div class="depo-name">Rafael A.</div><div class="depo-stars">★★★★★</div></div>
+        </div>
+        <div class="depo-text">"Perdi 6kg em 30 dias sem sofrimento. O método faz sentido — não é mais uma dieta maluca. É a primeira vez que consigo manter os resultados."</div>
+      </div>
+    </div>
+
+    <!-- OFERTA -->
+    <div class="oferta">
+      <div class="oferta-headline">Você pode continuar como está… <span>ou mudar seu corpo em 30 dias</span></div>
+      <div class="oferta-text">Enquanto você pensa, outras pessoas estão começando agora e já vendo resultados. A diferença entre quem muda e quem continua frustrado é uma única decisão.</div>
+      <div class="contraste">
+        <div class="contraste-row">
+          <div class="contraste-icon icon-x">✕</div>
+          <p>Continuar tentando sozinho — sem método — e falhar de novo</p>
+        </div>
+        <div class="contraste-row">
+          <div class="contraste-icon icon-x">✕</div>
+          <p>Mais um ano com o mesmo corpo, esperando o "momento certo"</p>
+        </div>
+        <div class="contraste-row">
+          <div class="contraste-icon icon-check">✓</div>
+          <p>Seguir um método validado por mais de 2.500 pessoas e ver resultado em 30 dias</p>
+        </div>
+      </div>
+      <div class="price-box">
+        <div class="price-de">De R$ 97,00</div>
+        <div class="price-por">Hoje por apenas</div>
+        <div class="price-val"><span class="cifrao">R$</span> 37<span class="cents">,90</span></div>
+        <div class="price-sub">Acesso imediato · Pagamento único</div>
+      </div>
+      <div class="urgency-bar">
+        <p><strong>⚡ Atenção:</strong> Esse valor promocional pode sair do ar a qualquer momento. Não há data garantida para a oferta continuar.</p>
+      </div>
+      <button class="btn-cta" onclick="goToCheckout()">DESBLOQUEAR AGORA POR R$37,90</button>
+      <p class="cta-sub">🔒 Pagamento 100% seguro · Acesso imediato · 7 dias de garantia</p>
+    </div>
+
+    <!-- GARANTIA -->
+    <div class="garantia">
+      <div class="garantia-inner">
+        <div class="shield">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z" fill="#22cc8833" stroke="#22cc88" stroke-width="1.5"/>
+            <path d="M9 12l2 2 4-4" stroke="#22cc88" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="garantia-text">
+          <h3>Garantia de 7 dias</h3>
+          <p>Se por qualquer motivo você não ficar satisfeito nos primeiros 7 dias, devolvemos 100% do seu dinheiro. Sem perguntas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>© 2025 Projeto Corpo 30D · Todos os direitos reservados</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  { q: "Qual é o seu principal objetivo?", opts: ["Perder peso rápido", "Secar a barriga", "Melhorar a saúde"] },
+  { q: "Você já tentou emagrecer antes?", opts: ["Sim, várias vezes", "Sim, mas desisti", "Nunca tentei"] },
+  { q: "Qual é a sua maior dificuldade?", opts: ["A dieta não funciona pra mim", "Falta de disciplina", "Metabolismo lento"] },
+  { q: "Quanto você quer perder em 30 dias?", opts: ["3kg", "5kg", "7kg ou mais"] },
+  { q: "Você sente que seu corpo simplesmente não responde?", opts: ["Sim, definitivamente", "Muito — é frustrante", "Com certeza absoluta"] }
+];
+
+let currentStep = 0;
+
+function startQuiz() {
+  document.getElementById('hero-section').style.display = 'none';
+  document.getElementById('quiz-wrapper').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentStep];
+  const pct = ((currentStep + 1) / questions.length) * 100;
+  document.getElementById('step-counter').textContent = 'Pergunta ' + (currentStep + 1) + ' de ' + questions.length;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('quiz-question').textContent = q.q;
+  const optsEl = document.getElementById('quiz-options');
+  optsEl.innerHTML = '';
+  const letters = ['A','B','C'];
+  q.opts.forEach(function(opt, i) {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    const icon = document.createElement('div');
+    icon.className = 'opt-icon';
+    icon.textContent = letters[i];
+    const txt = document.createTextNode(opt);
+    btn.appendChild(icon);
+    btn.appendChild(txt);
+    btn.addEventListener('click', nextStep);
+    optsEl.appendChild(btn);
+  });
+  const step = document.getElementById('quiz-step');
+  step.style.animation = 'none';
+  void step.offsetWidth;
+  step.style.animation = '';
+}
+
+function nextStep() {
+  currentStep++;
+  if (currentStep < questions.length) {
+    renderQuestion();
+  } else {
+    showProcessing();
+  }
+}
+
+function showProcessing() {
+  document.getElementById('quiz-wrapper').classList.remove('active');
+  document.getElementById('processing').classList.add('active');
+  var steps = ['ps1','ps2','ps3','ps4'];
+  steps.forEach(function(id, i) {
+    setTimeout(function() {
+      document.getElementById(id).classList.add('done');
+    }, 600 + i * 600);
+  });
+  setTimeout(function() {
+    document.getElementById('quiz-section').style.display = 'none';
+    var res = document.getElementById('resultado-section');
+    res.style.display = 'block';
+    res.scrollIntoView({ behavior: 'smooth' });
+  }, 3400);
+}
+
+function goToCheckout() {
+  window.open('https://pay.kirvano.com/6ce53285-1e58-43a6-983a-92ada15f6cfc', '_blank');
+}
+</script>
